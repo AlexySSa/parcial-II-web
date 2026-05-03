@@ -1,0 +1,19 @@
+{
+  "name": "pokecards-market",
+  "version": "1.0.0",
+  "description": "Aplicacion web interactiva para explorar y comprar cartas inspiradas en Pokemon con PokéAPI y PayPal Sandbox.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "pokemon",
+    "pokecards",
+    "paypal",
+    "sandbox",
+    "vanilla-js"
+  ],
+  "author": "",
+  "license": "MIT"
+}

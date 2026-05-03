@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Explora, desbloquea y compra PokéCards digitales usando datos de PokéAPI y pagos con PayPal Sandbox."
+    />
+    <title>PokéCards Market</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="background-glow background-glow--one"></div>
+    <div class="background-glow background-glow--two"></div>
+
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero__copy">
+          <div class="hero__topbar">
+            <span class="eyebrow">PokéAPI + PayPal Sandbox</span>
+            <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Cambiar tema">
+              <span class="theme-toggle__icons" aria-hidden="true">
+                <span class="theme-toggle__icon theme-toggle__icon--sun">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="4.2"></circle>
+                    <path d="M12 1.8v2.1M12 20.1v2.1M4.22 4.22l1.49 1.49M18.29 18.29l1.49 1.49M1.8 12h2.1M20.1 12h2.1M4.22 19.78l1.49-1.49M18.29 5.71l1.49-1.49"></path>
+                  </svg>
+                </span>
+                <span class="theme-toggle__icon theme-toggle__icon--moon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.8A8.9 8.9 0 1 1 11.2 3a7.2 7.2 0 0 0 9.8 9.8Z"></path>
+                  </svg>
+                </span>
+              </span>
+              <span class="theme-toggle__label" data-theme-label>Tema claro</span>
+              <span class="sr-only" data-theme-hint>Cambiar a oscuro</span>
+            </button>
+          </div>
+          <h1>PokéCards Market</h1>
+          <p class="hero__lead">
+            Explora una colección de cartas coleccionables inspiradas en Pokémon, selecciona tu favorita y
+            desbloquéala solo cuando el pago se confirme exitosamente.
+          </p>
+
+          <div class="hero__stats">
+            <article class="stat-card">
+              <span class="stat-card__label">Cartas cargadas</span>
+              <strong id="total-count">0</strong>
+            </article>
+            <article class="stat-card">
+              <span class="stat-card__label">Adquiridas</span>
+              <strong id="owned-count">0</strong>
+            </article>
+            <article class="stat-card">
+              <span class="stat-card__label">Inversión total</span>
+              <strong id="spent-total">$0.00</strong>
+            </article>
+          </div>
+        </div>
+
+        <aside class="hero__panel">
+          <div class="panel-card panel-card--highlight">
+            <span class="panel-card__title">Flujo incluido</span>
+            <ul class="check-list">
+              <li>25+ cartas dinámicas desde PokéAPI</li>
+              <li>Compra individual con PayPal Sandbox</li>
+              <li>Validación visual del pago exitoso</li>
+              <li>Persistencia local de cartas adquiridas</li>
+            </ul>
+          </div>
+          <div class="panel-card">
+            <span class="panel-card__title">Modo prueba</span>
+            <p>
+              El proyecto usa PayPal Sandbox. Puedes mantener el modo demo con <code>sb</code> o colocar tu
+              propio <code>PAYPAL_CLIENT_ID</code> en el archivo <code>.env</code>.
+            </p>
+          </div>
+        </aside>
+      </header>
+
+      <section class="controls">
+        <div class="search-box">
+          <label class="search-box__label" for="search-input">Buscar carta</label>
+          <input id="search-input" type="search" placeholder="Ejemplo: Pikachu" />
+        </div>
+
+        <div class="control-group">
+          <label for="type-filter">Tipo</label>
+          <select id="type-filter">
+            <option value="all">Todos</option>
+          </select>
+        </div>
+
+        <div class="control-group control-group--wide">
+          <span>Vista</span>
+          <div class="segmented-control" id="view-filter">
+            <button class="is-active" type="button" data-view="all">Todas</button>
+            <button type="button" data-view="locked">Bloqueadas</button>
+            <button type="button" data-view="owned">Compradas</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="message-banner" id="message-banner" hidden></div>
+
+      <main class="layout">
+        <section class="catalog">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Catálogo</span>
+              <h2>Colección disponible</h2>
+            </div>
+            <p id="catalog-summary">Preparando cartas...</p>
+          </div>
+
+          <div class="loading-grid" id="loading-grid" aria-hidden="true" hidden>
+            <div class="loading-card"></div>
+            <div class="loading-card"></div>
+            <div class="loading-card"></div>
+            <div class="loading-card"></div>
+            <div class="loading-card"></div>
+            <div class="loading-card"></div>
+          </div>
+
+          <div class="card-grid" id="card-grid"></div>
+          <div class="empty-state" id="empty-state" hidden>
+            <h3>No encontramos cartas con ese filtro</h3>
+            <p>Prueba otro nombre o cambia la vista para revisar el resto del catálogo.</p>
+          </div>
+        </section>
+
+        <aside class="sidebar">
+          <section class="detail-panel" id="detail-panel">
+            <div class="detail-panel__placeholder">
+              <span class="eyebrow">Selección</span>
+              <h3>Elige una carta para comprar</h3>
+              <p>Al seleccionar una carta verás su resumen, el estado de compra y el botón de PayPal.</p>
+            </div>
+          </section>
+
+          <section class="owned-panel">
+            <div class="section-heading section-heading--compact">
+              <div>
+                <span class="eyebrow">Mis compras</span>
+                <h2>Cartas desbloqueadas</h2>
+              </div>
+            </div>
+
+            <div class="owned-list" id="owned-list"></div>
+            <div class="empty-state empty-state--small" id="owned-empty">
+              <h3>Aún no tienes cartas compradas</h3>
+              <p>Completa un pago exitoso para desbloquear tu primera carta coleccionable.</p>
+            </div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
