@@ -104,7 +104,7 @@
 
       <div class="message-banner" id="message-banner" hidden></div>
 
-      <main class="layout">
+      <main class="market-stack">
         <section class="catalog">
           <div class="section-heading">
             <div>
@@ -130,31 +130,34 @@
           </div>
         </section>
 
-        <aside class="sidebar">
-          <section class="detail-panel" id="detail-panel">
-            <div class="detail-panel__placeholder">
-              <span class="eyebrow">Selección</span>
-              <h3>Elige una carta para comprar</h3>
-              <p>Al seleccionar una carta verás su resumen, el estado de compra y el botón de PayPal.</p>
+        <section class="owned-panel" id="owned-section">
+          <div class="section-heading section-heading--compact">
+            <div>
+              <span class="eyebrow">Mis compras</span>
+              <h2>Cartas desbloqueadas</h2>
             </div>
-          </section>
+          </div>
 
-          <section class="owned-panel">
-            <div class="section-heading section-heading--compact">
-              <div>
-                <span class="eyebrow">Mis compras</span>
-                <h2>Cartas desbloqueadas</h2>
-              </div>
-            </div>
-
-            <div class="owned-list" id="owned-list"></div>
-            <div class="empty-state empty-state--small" id="owned-empty">
-              <h3>Aún no tienes cartas compradas</h3>
-              <p>Completa un pago exitoso para desbloquear tu primera carta coleccionable.</p>
-            </div>
-          </section>
-        </aside>
+          <div class="owned-list" id="owned-list"></div>
+          <div class="empty-state empty-state--small" id="owned-empty">
+            <h3>Aún no tienes cartas compradas</h3>
+            <p>Completa un pago exitoso para desbloquear tu primera carta coleccionable.</p>
+          </div>
+        </section>
       </main>
+    </div>
+
+    <div class="modal-backdrop" id="card-modal" hidden>
+      <div class="modal-shell" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button class="modal-close" type="button" data-close-modal aria-label="Cerrar detalle">×</button>
+        <section class="detail-panel detail-panel--modal" id="detail-panel">
+          <div class="detail-panel__placeholder">
+            <span class="eyebrow">Selección</span>
+            <h3>No has seleccionado ninguna carta</h3>
+            <p>Explora el catálogo y presiona comprar para abrir el detalle de la carta que te interese.</p>
+          </div>
+        </section>
+      </div>
     </div>
 
     <script src="/app.js" defer></script>

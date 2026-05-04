@@ -36,6 +36,7 @@ const state = {
     view: "all"
   },
   selectedCardId: null,
+  modalOpen: false,
   sdkLoaded: false,
   sdkError: "",
   paypalButtons: null,
@@ -78,6 +79,8 @@ function cacheDom() {
   dom.typeFilter = document.querySelector("#type-filter");
   dom.viewFilter = document.querySelector("#view-filter");
   dom.themeToggle = document.querySelector("#theme-toggle");
+  dom.cardModal = document.querySelector("#card-modal");
+  dom.ownedSection = document.querySelector("#owned-section");
 }
 
 function bindEvents() {
@@ -116,6 +119,13 @@ function bindEvents() {
   });
 
   dom.detailPanel.addEventListener("click", (event) => {
+    const closeButton = event.target.closest("[data-scroll-owned]");
+    if (closeButton) {
+      closeCardModal();
+      dom.ownedSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
     const button = event.target.closest("[data-owned-card]");
     if (!button) {
       return;
@@ -131,6 +141,18 @@ function bindEvents() {
     }
 
     selectCard(Number(button.dataset.ownedCard), true);
+  });
+
+  dom.cardModal?.addEventListener("click", (event) => {
+    if (event.target === dom.cardModal || event.target.closest("[data-close-modal]")) {
+      closeCardModal();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && state.modalOpen) {
+      closeCardModal();
+    }
   });
 }
 
@@ -158,7 +180,7 @@ async function loadPayPalSdk() {
 
   try {
     await injectScript(
-      `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=${encodeURIComponent(currency)}&intent=capture`
+      `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=${encodeURIComponent(currency)}&intent=capture&components=buttons&disable-funding=card`
     );
     state.sdkLoaded = Boolean(window.paypal);
   } catch (error) {
@@ -198,7 +220,7 @@ async function loadCards() {
       throw new Error("No pudimos construir cartas validas desde PokéAPI.");
     }
 
-    state.selectedCardId = state.cards[0]?.id ?? null;
+    state.selectedCardId = null;
     populateTypeFilter();
   } catch (error) {
     showMessage(error.message, "error");
@@ -283,8 +305,8 @@ function renderCatalog() {
 
   if (filteredCards.length === 0) {
     state.selectedCardId = null;
-  } else if (!filteredCards.some((card) => card.id === state.selectedCardId)) {
-    state.selectedCardId = filteredCards[0]?.id ?? state.cards[0]?.id ?? null;
+  } else if (state.selectedCardId !== null && !filteredCards.some((card) => card.id === state.selectedCardId)) {
+    state.selectedCardId = null;
   }
 
   renderDetailPanel();
@@ -332,8 +354,8 @@ function renderDetailPanel() {
     dom.detailPanel.innerHTML = `
       <div class="detail-panel__placeholder">
         <span class="eyebrow">Selección</span>
-        <h3>No hay carta seleccionada</h3>
-        <p>Cuando el catálogo esté disponible, podrás elegir una carta para continuar.</p>
+        <h3>No has seleccionado ninguna carta</h3>
+        <p>Explora el catálogo y presiona comprar para abrir el detalle de la carta que te interese.</p>
       </div>
     `;
     return;
@@ -388,19 +410,31 @@ function renderDetailPanel() {
                 Compra confirmada${purchaseInfo.payerName ? ` por ${purchaseInfo.payerName}` : ""}. La carta quedó
                 desbloqueada y ya aparece en tu sección de compras.
               </p>
-              <button class="secondary-button" type="button" data-owned-card="${card.id}">Ver en mis compras</button>
+              <button class="secondary-button" type="button" data-scroll-owned>Ver en mis compras</button>
             `
             : `
-              <p>
-                Completa el checkout sandbox para desbloquear esta carta. Si el pago falla o se cancela, la carta
-                permanecerá bloqueada.
-              </p>
-              <div class="paypal-slot" id="paypal-slot" data-state="${state.sdkLoaded ? "ready" : "loading"}"></div>
-              ${
-                state.sdkError
-                  ? `<p>${state.sdkError}</p>`
-                  : `<p>Usando PayPal Sandbox en ${state.config.paypalCurrency}. El estado se valida con la respuesta del checkout.</p>`
-              }
+              <div class="payment-method-box">
+                <div class="payment-method-box__copy">
+                  <span class="eyebrow">Método de pago</span>
+                  <h4>Checkout seguro con PayPal</h4>
+                  <p>
+                    La transacción se autoriza en una ventana segura de PayPal Sandbox. Haz clic en el botón para abrir
+                    el checkout y revisar el pedido antes de confirmar el pago.
+                  </p>
+                  <p>
+                    Si el pago falla o se cancela, la carta permanecerá bloqueada.
+                  </p>
+                </div>
+
+                <div class="payment-method-box__actions">
+                  <div class="paypal-slot paypal-slot--steam" id="paypal-slot" data-state="${state.sdkLoaded ? "ready" : "loading"}"></div>
+                  ${
+                    state.sdkError
+                      ? `<p class="payment-method-box__note">${state.sdkError}</p>`
+                      : `<p class="payment-method-box__note">Usando PayPal Sandbox en ${state.config.paypalCurrency}. La carta solo se desbloquea si PayPal devuelve la compra como completada.</p>`
+                  }
+                </div>
+              </div>
             `
         }
       </div>
@@ -436,11 +470,12 @@ async function mountPayPalButton(card) {
 
   state.paypalButtons = window.paypal.Buttons({
     style: {
-      layout: "vertical",
+      layout: "horizontal",
       color: "gold",
-      shape: "pill",
+      shape: "rect",
       label: "paypal",
-      height: 45
+      tagline: false,
+      height: 40
     },
 
     createOrder(_data, actions) {
@@ -609,17 +644,36 @@ function getOwnedCards() {
 
 function selectCard(cardId, shouldScroll) {
   state.selectedCardId = cardId;
+  state.modalOpen = true;
   renderCatalog();
+  toggleModalVisibility(true);
 
-  if (shouldScroll && window.innerWidth < 1120) {
+  if (shouldScroll && window.innerWidth < 820) {
     dom.detailPanel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+}
+
+function closeCardModal() {
+  if (!state.modalOpen && state.selectedCardId === null) {
+    return;
+  }
+
+  state.modalOpen = false;
+  toggleModalVisibility(false);
+  state.selectedCardId = null;
+  void destroyPayPalButton();
+  renderCatalog();
 }
 
 function showMessage(message, tone = "info") {
   dom.messageBanner.hidden = false;
   dom.messageBanner.dataset.tone = tone;
   dom.messageBanner.textContent = message;
+}
+
+function toggleModalVisibility(isOpen) {
+  dom.cardModal.hidden = !isOpen;
+  document.body.classList.toggle("has-modal-open", isOpen);
 }
 
 function isCardOwned(cardId) {
@@ -675,7 +729,8 @@ function applyTheme(theme) {
 
   const isDark = theme === "dark";
   dom.themeToggle.setAttribute("aria-pressed", String(isDark));
-  dom.themeToggle.querySelector("[data-theme-copy]").textContent = isDark ? "Modo oscuro" : "Modo claro";
+  dom.themeToggle.setAttribute("aria-label", isDark ? "Cambiar a tema claro" : "Cambiar a tema oscuro");
+  dom.themeToggle.querySelector("[data-theme-label]").textContent = isDark ? "Tema oscuro" : "Tema claro";
   dom.themeToggle.querySelector("[data-theme-hint]").textContent = isDark ? "Cambiar a claro" : "Cambiar a oscuro";
 }
 
