@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Revisa el carrito de PokeCards Market y completa la compra total con PayPal Sandbox."
+    />
+    <title>Carrito | PokeCards Market</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="background-glow background-glow--one"></div>
+    <div class="background-glow background-glow--two"></div>
+
+    <div class="page-shell">
+      <header class="hero hero--store">
+        <div class="hero__copy">
+          <div class="hero__topbar">
+            <a class="brand-mark" href="/">PokeCards Market</a>
+            <div class="header-actions">
+              <a class="catalog-link" href="/">Volver al catalogo</a>
+              <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Cambiar a oscuro">
+                <span class="theme-toggle__icons" aria-hidden="true">
+                  <span class="theme-toggle__icon theme-toggle__icon--sun">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="4.2"></circle>
+                      <path d="M12 1.8v2.1M12 20.1v2.1M4.22 4.22l1.49 1.49M18.29 18.29l1.49 1.49M1.8 12h2.1M20.1 12h2.1M4.22 19.78l1.49-1.49M18.29 5.71l1.49-1.49"></path>
+                    </svg>
+                  </span>
+                  <span class="theme-toggle__icon theme-toggle__icon--moon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 12.8A8.9 8.9 0 1 1 11.2 3a7.2 7.2 0 0 0 9.8 9.8Z"></path>
+                    </svg>
+                  </span>
+                </span>
+                <span class="sr-only" data-theme-hint>Cambiar a oscuro</span>
+              </button>
+            </div>
+          </div>
+
+          <span class="eyebrow">Carrito de compra</span>
+          <h1>Revisa tus cartas antes de pagar.</h1>
+          <p class="hero__lead">
+            Esta pagina concentra el pedido completo. Puedes quitar cartas una por una, vaciar el carrito entero
+            o completar una sola compra para desbloquear todas las seleccionadas.
+          </p>
+
+          <div class="hero__stats hero__stats--three">
+            <article class="stat-card">
+              <span class="stat-card__label">Cartas en carrito</span>
+              <strong id="cart-count">0</strong>
+            </article>
+            <article class="stat-card">
+              <span class="stat-card__label">Subtotal</span>
+              <strong id="cart-subtotal">$0.00</strong>
+            </article>
+            <article class="stat-card">
+              <span class="stat-card__label">Total final</span>
+              <strong id="cart-total">$0.00</strong>
+            </article>
+          </div>
+        </div>
+
+        <aside class="hero__panel">
+          <div class="panel-card panel-card--highlight">
+            <span class="panel-card__title">Estado del pedido</span>
+            <ul class="check-list">
+              <li>Checkout de varias cartas en una sola orden</li>
+              <li>Boton para vaciar todo el carrito</li>
+              <li>Pago validado solo desde PayPal Sandbox</li>
+              <li>Desbloqueo automatico tras captura exitosa</li>
+            </ul>
+          </div>
+        </aside>
+      </header>
+
+      <div class="message-banner" id="message-banner" hidden></div>
+
+      <div class="success-overlay" id="purchase-success" hidden aria-live="assertive" aria-atomic="true" role="status">
+        <div class="success-overlay__card">
+          <div class="success-overlay__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m5 12 4.2 4.2L19 6.5"></path>
+            </svg>
+          </div>
+          <span class="eyebrow">Compra confirmada</span>
+          <h2 id="purchase-success-title">Compra completada</h2>
+          <p id="purchase-success-copy">Tus cartas se desbloquearon correctamente.</p>
+        </div>
+      </div>
+
+      <main class="cart-layout">
+        <section class="catalog">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Pedido actual</span>
+              <h2>Cartas reservadas</h2>
+            </div>
+            <button class="danger-button" id="clear-cart" type="button" hidden>Vaciar carrito</button>
+          </div>
+
+          <div class="cart-list" id="cart-list"></div>
+
+          <div class="empty-state" id="cart-empty">
+            <h3>Tu carrito esta vacio</h3>
+            <p>Vuelve al catalogo, agrega cartas y regresa aqui para pagar todo de una vez.</p>
+            <a class="select-button select-button--link" href="/">Explorar catalogo</a>
+          </div>
+        </section>
+
+        <aside class="detail-panel detail-panel--sticky" id="checkout-panel">
+          <div class="empty-state empty-state--small">
+            <h3>Calculando tu pedido</h3>
+            <p>Estamos preparando el resumen y el checkout del carrito.</p>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/cart.js"></script>
+  </body>
+</html>
