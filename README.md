@@ -1,99 +1,81 @@
-# PokeCards Market
+# PokéLab · Libreta de campo
 
-Aplicacion web interactiva para explorar cartas digitales inspiradas en Pokemon, agregarlas a un carrito y comprarlas con PayPal Sandbox usando datos reales de la PokeAPI.
+Pokédex, constructor de equipos y comparador de estadísticas. HTML, CSS y JavaScript, sin dependencias de npm. El servidor Node incluido sirve los archivos para trabajar localmente.
 
-## Que incluye
+[Abrir PokéLab](https://alexyssa.github.io/parcial-II-web/) · [Código en GitHub](https://github.com/AlexySSa/parcial-II-web)
 
-- Consumo dinamico de PokeAPI con 30 cartas por defecto.
-- Catalogo con imagen, nombre, tipo y precio.
-- Filtros por nombre, tipo y estado.
-- Carrito en una pagina aparte.
-- Checkout agrupado con PayPal Sandbox.
-- Validacion de pago antes de desbloquear cartas.
-- Persistencia visual de compras y carrito con `localStorage`.
-- Modo oscuro y confirmacion visual al completar la compra.
+## Contenido
 
-## Requisitos
+- 1,025 especies y 326 variantes: **1,351 entradas** del endpoint `/pokemon` de PokéAPI en el snapshot del 14 de septiembre de 2026 (UTC).
+- Búsqueda por nombre o número, tipos, generación de la especie y formas alternativas.
+- Páginas de 24 resultados; filtros sobre el catálogo completo, no solo la página visible.
+- Fichas con seis estadísticas base, altura, peso, descripción y habilidades.
+- Favoritos, equipo actual de hasta seis Pokémon y hasta doce equipos guardados por nombre.
+- Análisis defensivo de los 18 tipos y comparación de dos Pokémon.
+- Enlace de equipo mediante parámetros de URL. Cargar un enlace no lo añade a la lista de equipos guardados hasta pulsar Guardar equipo.
+- Tema claro/oscuro, navegación por teclado y diseño adaptable.
 
-- Node.js 18 o superior.
-- Conexion a internet para consultar PokeAPI y cargar PayPal Sandbox.
-- Credenciales de una app Sandbox de PayPal si quieres probar compras completas.
+## Uso local
 
-## Clonar el proyecto
-
-```bash
-git clone https://github.com/AlexySSa/parcial-II-web.git
-cd parcial-II-web
-```
-
-## Configuracion
-
-Este proyecto no usa dependencias externas de npm, asi que puedes ejecutarlo directamente con `npm start`.
-
-Si solo quieres ver el catalogo y la interfaz:
-
-- No hace falta crear `.env`.
-- El servidor usara `PAYPAL_CLIENT_ID=sb` por defecto.
-- En ese modo el boton de PayPal puede mostrarse, pero la compra no se capturara porque falta el `Client Secret`.
-
-Si quieres probar la compra Sandbox completa:
-
-1. Crea un archivo `.env` a partir de `.env.example`.
-
-En macOS o Linux:
-
-```bash
-cp .env.example .env
-```
-
-En PowerShell:
+Requiere Node.js 20 o superior. No necesita instalación de paquetes, PayPal ni credenciales.
 
 ```powershell
-Copy-Item .env.example .env
-```
-
-2. Abre `.env` y coloca tus credenciales Sandbox de PayPal Developer:
-
-```env
-PAYPAL_CLIENT_ID=TU_CLIENT_ID_SANDBOX
-PAYPAL_CLIENT_SECRET=TU_CLIENT_SECRET_SANDBOX
-PAYPAL_CURRENCY=USD
-POKEMON_LIMIT=30
-```
-
-## Ejecutar
-
-```bash
 npm start
 ```
 
-Luego abre:
+Abre `http://127.0.0.1:3000`. Para otro puerto:
 
-```text
-http://localhost:3000
+```powershell
+$env:PORT=3001
+npm start
 ```
 
-## Como probar la compra
+`npm run dev` reinicia el servidor al editarlo. Los archivos de interfaz se actualizan al recargar el navegador.
 
-1. Agrega una o varias cartas al carrito.
-2. Entra a `http://localhost:3000/cart.html`.
-3. Haz clic en el boton de PayPal.
-4. Inicia sesion con una cuenta `Personal` de PayPal Sandbox.
-5. Acepta el pago.
-6. Si PayPal devuelve estado exitoso, las cartas se desbloquean y aparecen en `Mis compras`.
+## Datos y alcance
 
-## Estructura principal
+El catálogo compacto está incluido en `public/data/catalog.json`: nombres, tipos, estadísticas, altura, peso y generación se pueden consultar sin una conexión externa una vez servida la aplicación localmente. Las ilustraciones oficiales necesitan conexión. Si una ilustración falla se intenta el sprite y después se muestra un marcador de imagen no disponible. No se almacenan todas las imágenes en el proyecto.
 
-- `server.js`: servidor HTTP, archivos estaticos y endpoints de PayPal.
-- `public/index.html`: catalogo principal.
-- `public/cart.html`: carrito y checkout.
-- `public/app.js`: logica del catalogo.
-- `public/cart.js`: logica del carrito y compra.
-- `public/shared.js`: utilidades compartidas.
-- `public/styles.css`: estilos globales.
+Las descripciones y habilidades se consultan bajo demanda en PokéAPI y se guardan temporalmente en el navegador por siete días. Si falla la consulta, la ficha mantiene las estadísticas locales y ofrece reintentar. Los nombres de habilidades se conservan como los entrega la API. Se prefiere descripción en español y se indica cuando solo hay texto en inglés.
 
-## Notas importantes
+Se incluyen todas las entradas del endpoint `/pokemon` al actualizar el snapshot, incluidas formas regionales y variantes con registro propio. Las formas exclusivamente cosméticas de `/pokemon-form` son otro conjunto y no se incluyen todas. El filtro de generación corresponde a la especie original, no al debut de la variante. Un peso no disponible en la fuente se muestra como tal.
 
-- Las compras se guardan visualmente en `localStorage`, no en una base de datos.
-- El proyecto esta pensado para pruebas con PayPal Sandbox, no para cobros reales.
-- Si cambias de navegador o borras almacenamiento local, se perdera el estado visual de las cartas desbloqueadas.
+El análisis de debilidades considera tipos duales y la tabla moderna de tipos (generación VI en adelante). No incluye habilidades, movimientos, objetos, nivel ni entrenamiento; no es un simulador de combate. Seis entradas distintas pueden incluir variantes de una misma especie.
+
+Los favoritos y equipos se guardan únicamente en este navegador. Usar el mismo nombre al guardar actualiza ese equipo. No hay cuentas, sincronización ni base de datos. El enlace compartido incluye solo IDs del equipo y su nombre. Mientras se ejecute en localhost, el enlace solo sirve en el equipo que aloja la aplicación.
+
+## Actualizar el catálogo
+
+```powershell
+npm run update:catalog
+```
+
+El script descarga tablas CSV oficiales fijadas al commit más reciente de PokeAPI/pokeapi y contrasta IDs y nombres con el índice de la API. Rechaza datos incompletos antes de escribir el archivo. No consulta una ficha por Pokémon. `POKEAPI_REF` permite elegir un commit reproducible. La fecha y el commit usados están guardados dentro del JSON.
+
+Fuentes: [PokéAPI](https://pokeapi.co/docs/v2), [tablas oficiales](https://github.com/PokeAPI/pokeapi/tree/master/data/v2/csv), [ilustraciones y sprites](https://github.com/PokeAPI/sprites).
+
+## Verificación
+
+```powershell
+npm test
+```
+
+Pruebas de los 324 enfrentamientos de tipos contra respuestas de PokéAPI guardadas, tipos dobles, inmunidades, límites de equipo, enlaces inválidos, búsqueda y filtros sobre todo el catálogo, integridad de los datos y archivos estáticos.
+
+## Estructura
+
+- `public/index.html`, `styles.css`, `app.js`: interfaz y flujos.
+- `public/shared.mjs`: consultas, búsqueda, persistencia y utilidades.
+- `public/team.mjs`: lógica pura de equipos y tipos.
+- `public/data/catalog.json`: snapshot completo.
+- `scripts/update-catalog.mjs`: actualización reproducible de los datos.
+- `tests/`: pruebas y respuesta de tipos usada como referencia.
+- `server.js`: servidor estático local, sin rutas de pago.
+
+## Publicación
+
+El proyecto se publica en [GitHub Pages](https://alexyssa.github.io/parcial-II-web/). El flujo `.github/workflows/pages.yml` ejecuta las pruebas y publica únicamente la carpeta `public/` después de cada actualización de `main`. El servidor local y los archivos de configuración no forman parte del sitio publicado.
+
+La interfaz usa rutas relativas y no necesita un servidor de pagos. Si en el futuro se requieren funciones de servidor, se podrá usar otro alojamiento conservando el mismo repositorio. En la versión publicada, los enlaces de equipo funcionan desde cualquier dispositivo; los favoritos y equipos guardados siguen siendo locales a cada navegador.
+
+Proyecto educativo de fans, no afiliado a Nintendo, Game Freak o The Pokémon Company. Pokémon y sus ilustraciones pertenecen a sus respectivos titulares. La licencia de código no transfiere derechos sobre esos recursos.

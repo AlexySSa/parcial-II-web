@@ -1,19 +1,15 @@
 {
-  "name": "pokecards-market",
-  "version": "1.0.0",
-  "description": "Aplicacion web interactiva para explorar y comprar cartas inspiradas en Pokemon con PokéAPI y PayPal Sandbox.",
+  "name": "pokelab",
+  "version": "2.0.0",
+  "description": "Pokédex completa, constructor de equipos y comparación de estadísticas Pokémon.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "test": "node tests/run.mjs",
+    "update:catalog": "node scripts/update-catalog.mjs"
   },
-  "keywords": [
-    "pokemon",
-    "pokecards",
-    "paypal",
-    "sandbox",
-    "vanilla-js"
-  ],
-  "author": "",
+  "engines": { "node": ">=20" },
+  "keywords": ["pokemon", "pokedex", "team-builder", "pokeapi", "vanilla-js"],
   "license": "MIT"
 }

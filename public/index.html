@@ -1,166 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Explora, agrega al carrito y compra cartas digitales inspiradas en Pokemon usando PokeAPI y PayPal Sandbox."
-    />
-    <title>PokeCards Market</title>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <div class="background-glow background-glow--one"></div>
-    <div class="background-glow background-glow--two"></div>
-
-    <div class="page-shell">
-      <header class="hero hero--store">
-        <div class="hero__copy">
-          <div class="hero__topbar">
-            <a class="brand-mark" href="/">PokeCards Market</a>
-            <div class="header-actions">
-              <a class="cart-link" href="/cart.html">
-                <span>Carrito</span>
-                <strong data-cart-count>0</strong>
-              </a>
-              <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Cambiar a oscuro">
-                <span class="theme-toggle__icons" aria-hidden="true">
-                  <span class="theme-toggle__icon theme-toggle__icon--sun">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="4.2"></circle>
-                      <path d="M12 1.8v2.1M12 20.1v2.1M4.22 4.22l1.49 1.49M18.29 18.29l1.49 1.49M1.8 12h2.1M20.1 12h2.1M4.22 19.78l1.49-1.49M18.29 5.71l1.49-1.49"></path>
-                    </svg>
-                  </span>
-                  <span class="theme-toggle__icon theme-toggle__icon--moon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 12.8A8.9 8.9 0 1 1 11.2 3a7.2 7.2 0 0 0 9.8 9.8Z"></path>
-                    </svg>
-                  </span>
-                </span>
-                <span class="sr-only" data-theme-hint>Cambiar a oscuro</span>
-              </button>
-            </div>
-          </div>
-
-          <span class="eyebrow">Catalogo digital + carrito</span>
-          <h1>Explora cartas, arma tu carrito y paga todo junto.</h1>
-          <p class="hero__lead">
-            El catalogo ahora funciona como tienda: agrega tus Pokemon favoritos al carrito, revisalos en una pagina
-            aparte y desbloquealos solo si el pago sandbox se confirma correctamente.
-          </p>
-
-          <div class="hero__stats hero__stats--four">
-            <article class="stat-card">
-              <span class="stat-card__label">Cartas cargadas</span>
-              <strong id="total-count">0</strong>
-            </article>
-            <article class="stat-card">
-              <span class="stat-card__label">En carrito</span>
-              <strong id="cart-count">0</strong>
-            </article>
-            <article class="stat-card">
-              <span class="stat-card__label">Desbloqueadas</span>
-              <strong id="owned-count">0</strong>
-            </article>
-            <article class="stat-card">
-              <span class="stat-card__label">Total carrito</span>
-              <strong id="cart-total">$0.00</strong>
-            </article>
-          </div>
-        </div>
-
-        <aside class="hero__panel">
-          <div class="panel-card panel-card--highlight">
-            <span class="panel-card__title">Nuevo flujo</span>
-            <ul class="check-list">
-              <li>Agregar o quitar cartas del carrito</li>
-              <li>Pagina separada para revisar el pedido</li>
-              <li>Vaciar todo el carrito si cambias de idea</li>
-              <li>Desbloqueo solo tras pago sandbox exitoso</li>
-            </ul>
-          </div>
-          <div class="panel-card">
-            <span class="panel-card__title">Como comprar</span>
-            <p>
-              Usa el boton <code>Agregar</code> en cada carta y luego abre el carrito para pagar todas juntas en
-              PayPal Sandbox.
-            </p>
-          </div>
-        </aside>
-      </header>
-
-      <section class="controls">
-        <div class="search-box">
-          <label class="search-box__label" for="search-input">Buscar carta</label>
-          <input id="search-input" type="search" placeholder="Ejemplo: Pikachu" />
-        </div>
-
-        <div class="control-group">
-          <label for="type-filter">Tipo</label>
-          <select id="type-filter">
-            <option value="all">Todos</option>
-          </select>
-        </div>
-
-        <div class="control-group control-group--wide">
-          <span>Vista</span>
-          <div class="segmented-control" id="view-filter">
-            <button class="is-active" type="button" data-view="all">Todas</button>
-            <button type="button" data-view="available">Disponibles</button>
-            <button type="button" data-view="cart">En carrito</button>
-            <button type="button" data-view="owned">Compradas</button>
-          </div>
-        </div>
-      </section>
-
-      <div class="message-banner" id="message-banner" hidden></div>
-
-      <main class="market-stack">
-        <section class="catalog">
-          <div class="section-heading">
-            <div>
-              <span class="eyebrow">Catalogo</span>
-              <h2>Coleccion disponible</h2>
-            </div>
-            <p id="catalog-summary">Preparando cartas...</p>
-          </div>
-
-          <div class="loading-grid" id="loading-grid" aria-hidden="true">
-            <div class="loading-card"></div>
-            <div class="loading-card"></div>
-            <div class="loading-card"></div>
-            <div class="loading-card"></div>
-            <div class="loading-card"></div>
-            <div class="loading-card"></div>
-          </div>
-
-          <div class="card-grid" id="card-grid"></div>
-
-          <div class="empty-state" id="empty-state" hidden>
-            <h3>No encontramos cartas con ese filtro</h3>
-            <p>Prueba otro nombre o cambia la vista para revisar el resto del catalogo.</p>
-          </div>
-        </section>
-
-        <section class="owned-panel">
-          <div class="section-heading section-heading--compact">
-            <div>
-              <span class="eyebrow">Coleccion desbloqueada</span>
-              <h2>Mis compras</h2>
-            </div>
-            <a class="catalog-link" href="/cart.html">Ir al carrito</a>
-          </div>
-
-          <div class="owned-list" id="owned-list"></div>
-          <div class="empty-state empty-state--small" id="owned-empty">
-            <h3>Aun no has comprado cartas</h3>
-            <p>Cuando completes un pago exitoso, tus cartas desbloqueadas apareceran aqui.</p>
-          </div>
-        </section>
-      </main>
-    </div>
-
-    <script type="module" src="/app.js"></script>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tu libreta de campo Pokémon. Consulta la Pokédex, compara estadísticas y prepara tu equipo de seis.">
+  <meta name="theme-color" content="#bd322b">
+  <title>PokéLab · Libreta de campo</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+  <header class="masthead">
+    <a class="wordmark" href="./index.html" aria-label="PokéLab, inicio"><span class="brand-seal" aria-hidden="true">P.</span>PokéLab<span class="brand-caption">LIBRETA DE CAMPO</span></a>
+    <nav class="main-nav" aria-label="Principal">
+      <button data-view="catalog" class="active" aria-current="page">Pokédex</button>
+      <button data-view="team">Mi equipo <span id="nav-team">0/6</span></button>
+      <button data-view="compare">Comparar <span id="nav-compare">0/2</span></button>
+      <button data-view="favorites">Favoritos <span id="nav-favorites">0</span></button>
+    </nav>
+    <button id="theme-toggle" class="theme-button" aria-label="Activar tema oscuro" aria-pressed="false">Oscuro</button>
+  </header>
+  <main id="main" tabindex="-1">
+    <section id="catalog-view" aria-labelledby="catalog-title">
+      <div class="page-heading"><div><p class="overline" id="catalog-kicker">ARCHIVO / POKÉDEX NACIONAL</p><h1 id="catalog-title">Índice nacional.</h1></div><p class="edition"><strong id="catalog-count">—</strong><span>registros de campo</span></p></div>
+      <div class="filter-bar">
+        <div class="search-field"><label for="search">Buscar Pokémon</label><div class="search-control"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Nombre o número. Por ejemplo, 025" autocomplete="off"></div></div>
+        <div><label for="type-filter">Tipo</label><select id="type-filter"><option value="all">Todos los tipos</option></select></div>
+        <div><label for="generation-filter">Generación de la especie</label><select id="generation-filter"><option value="all">Todas</option></select></div>
+        <div><label for="sort-filter">Ordenar</label><select id="sort-filter"><option value="number">N.º de Pokédex</option><option value="name">Nombre A–Z</option><option value="total">Estadísticas totales</option><option value="speed">Velocidad</option></select></div>
+      </div>
+      <div class="catalog-toolbar"><p id="results-count" role="status">Preparando el archivo…</p><div class="toolbar-actions"><label class="check-label"><input id="forms-filter" type="checkbox"> Incluir formas alternativas</label><button id="reset-filters" class="text-button">Restablecer</button></div></div>
+      <div class="workbench">
+        <div><div id="pokemon-grid" class="pokemon-grid" aria-busy="true"></div><div id="empty-state" class="empty-state" hidden><h2>Sin coincidencias</h2><p>Prueba otro nombre o restablece los filtros.</p></div><div id="load-error" class="empty-state" hidden><h2>No se pudo abrir la Pokédex</h2><p id="load-error-copy"></p><button id="retry-load" class="primary-button">Intentar de nuevo</button></div>
+        <nav id="pagination" class="pagination" aria-label="Páginas de Pokémon" hidden><button id="prev-page" class="outline-button">← Anterior</button><span id="page-label"></span><button id="next-page" class="outline-button">Siguiente →</button></nav></div>
+        <aside class="team-notebook" aria-labelledby="notebook-title"><div class="notebook-heading"><span class="overline">EN PREPARACIÓN</span><h2 id="notebook-title">Tu equipo <span id="team-counter">0/6</span></h2></div><div id="team-mini"></div><button class="primary-button full-width" data-view="team">Revisar equipo →</button><p class="small-note">Hasta seis compañeros. Elige un Pokémon y pulsa + Equipo.</p></aside>
+      </div>
+    </section>
+    <section id="team-view" hidden aria-labelledby="team-title">
+      <div class="page-heading"><div><p class="overline">CUADERNO / ESTRATEGIA</p><h1 id="team-title">Mi equipo.</h1></div><button class="outline-button" data-view="catalog">+ Buscar Pokémon</button></div>
+      <div class="team-tools"><div class="team-name-field"><label for="team-name">Nombre del equipo</label><input id="team-name" maxlength="50" placeholder="Mi equipo" value="Mi equipo" disabled></div><button id="save-team" class="primary-button" disabled>Guardar equipo</button><button id="share-team" class="outline-button" disabled>Copiar enlace</button></div>
+      <p class="small-note">Tus equipos y favoritos se guardan en este navegador.</p>
+      <div id="team-grid" class="team-grid"></div>
+      <section class="analysis-section" aria-labelledby="analysis-title"><div class="section-heading"><h2 id="analysis-title">El equipo frente a cada tipo</h2><span class="overline">DEFENSA</span></div><p class="section-copy">Cuántos integrantes son débiles, resistentes o inmunes a un ataque de cada tipo. Se consideran ambos tipos de cada Pokémon; no habilidades, objetos ni movimientos.</p><div id="team-analysis"></div></section>
+      <section class="saved-section" aria-labelledby="saved-title"><div class="section-heading"><h2 id="saved-title">Equipos guardados</h2></div><div id="saved-teams" class="saved-teams"></div></section>
+    </section>
+    <section id="compare-view" hidden aria-labelledby="compare-title"><div class="page-heading"><div><p class="overline">ESTUDIO / CARA A CARA</p><h1 id="compare-title">Comparar Pokémon.</h1></div><button class="outline-button" data-view="catalog">Elegir Pokémon</button></div><p class="section-copy">Selecciona dos Pokémon con el botón Comparar de la Pokédex. Las cifras son estadísticas base, sin entrenamiento ni nivel.</p><div id="comparison"></div></section>
+  </main>
+  <footer class="site-footer"><span><strong>PokéLab</strong> / Cuaderno de entrenador</span><span id="data-note">Datos de PokéAPI</span><span>Proyecto de fans · Pokémon pertenece a sus respectivos titulares.</span></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="detail-dialog" aria-labelledby="detail-title"><button class="dialog-close" aria-label="Cerrar ficha" autofocus>✕</button><div id="detail-content"></div></dialog>
+  <dialog id="share-dialog" aria-labelledby="share-title"><button class="dialog-close" aria-label="Cerrar enlace">✕</button><h2 id="share-title">Enlace del equipo</h2><p id="share-help">Selecciona y copia el enlace para compartir este equipo.</p><label for="share-url">Enlace</label><input id="share-url" readonly></dialog>
+  <noscript><p class="empty-state">Activa JavaScript para consultar la Pokédex y crear equipos.</p></noscript>
+</body>
 </html>
